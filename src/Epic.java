@@ -1,22 +1,26 @@
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Epic extends Task {
-    private ArrayList<SubTask> subTasks = new ArrayList<>();
+    private HashMap<Integer, SubTask> subTasks = new HashMap<>();
 
-    public Epic(int taskId, String title, String description, TaskStatus taskStatus, ArrayList<SubTask> subTasks) {
+    public Epic(int taskId, String title, String description, TaskStatus taskStatus, HashMap<Integer, SubTask> subTasks) {
         super(taskId, title, description, taskStatus);
         this.subTasks = subTasks;
     }
 
-    public ArrayList<SubTask> getSubTasks() {
+    public Epic(int taskId, String title, String description, TaskStatus taskStatus) {
+        super(taskId, title, description, taskStatus);
+    }
+
+    public HashMap<Integer, SubTask> getSubTasks() {
         return subTasks;
     }
 
-    public void setSubTasks(ArrayList<SubTask> subTasks) {
+    public void setSubTasks(HashMap<Integer, SubTask> subTasks) {
         this.subTasks = subTasks;
     }
 
-    public void updateEpicStatus () {
+    public void updateEpicStatus() {
         if (subTasks.isEmpty()) {
             setTaskStatus(TaskStatus.NEW);
             return;
@@ -25,7 +29,8 @@ public class Epic extends Task {
         boolean isAllNew = true;
         boolean isAllDone = true;
 
-        for (SubTask subTask : subTasks) {
+        for (SubTask subTask : subTasks.values()) {
+
             if (subTask.getTaskStatus() != TaskStatus.NEW) {
                 isAllNew = false;
             }
@@ -46,4 +51,24 @@ public class Epic extends Task {
         setTaskStatus(TaskStatus.IN_PROGRESS);
     }
 
+    public void updateSubTask(int subTaskId, SubTask subTask) {
+        subTasks.put(subTaskId, subTask);
+        updateEpicStatus();
+    }
+
+    public void deleteSubTaskById(int subTaskId) {
+        subTasks.remove(subTaskId);
+        updateEpicStatus();
+    }
+
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "\n    title='" + getTitle() + '\'' +
+                ", \n    description='" + getDescription() + '\'' +
+                ", \n    taskId=" + getTaskId() +
+                ", \n    taskStatus=" + getTaskStatus() +
+                "\n    subTaskCount=" + subTasks.size() +
+                "\n}";
+    }
 }
