@@ -1,74 +1,37 @@
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Epic extends Task {
-    private HashMap<Integer, SubTask> subTasks = new HashMap<>();
+    private ArrayList<Integer> subTaskIds = new ArrayList<>();
 
-    public Epic(int taskId, String title, String description, TaskStatus taskStatus, HashMap<Integer, SubTask> subTasks) {
+    public Epic(int taskId, String title, String description, TaskStatus taskStatus, ArrayList<Integer> subTasks) {
         super(taskId, title, description, taskStatus);
-        this.subTasks = subTasks;
+        this.subTaskIds = subTasks;
     }
 
     public Epic(int taskId, String title, String description, TaskStatus taskStatus) {
         super(taskId, title, description, taskStatus);
     }
 
-    public HashMap<Integer, SubTask> getSubTasks() {
-        return subTasks;
+    public ArrayList<Integer> getSubTaskIds() {
+        return subTaskIds;
     }
 
-    public void setSubTasks(HashMap<Integer, SubTask> subTasks) {
-        this.subTasks = subTasks;
+    public void addSubTaskId(Integer subTaskId) {
+        subTaskIds.add(subTaskId);
     }
 
-    public void updateEpicStatus() {
-        if (subTasks.isEmpty()) {
-            setTaskStatus(TaskStatus.NEW);
-            return;
-        }
-
-        boolean isAllNew = true;
-        boolean isAllDone = true;
-
-        for (SubTask subTask : subTasks.values()) {
-
-            if (subTask.getTaskStatus() != TaskStatus.NEW) {
-                isAllNew = false;
-            }
-            if (subTask.getTaskStatus() != TaskStatus.DONE) {
-                isAllDone = false;
-            }
-            if (!isAllNew && !isAllDone) break;
-        }
-
-        if (isAllNew) {
-            setTaskStatus(TaskStatus.NEW);
-            return;
-        }
-        if (isAllDone) {
-            setTaskStatus(TaskStatus.DONE);
-            return;
-        }
-        setTaskStatus(TaskStatus.IN_PROGRESS);
-    }
-
-    public void updateSubTask(int subTaskId, SubTask subTask) {
-        subTasks.put(subTaskId, subTask);
-        updateEpicStatus();
-    }
-
-    public void deleteSubTaskById(int subTaskId) {
-        subTasks.remove(subTaskId);
-        updateEpicStatus();
+    public void removeSubTaskId(Integer subTaskId) {
+        subTaskIds.remove(subTaskId);
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "\n    title='" + getTitle() + '\'' +
-                ", \n    description='" + getDescription() + '\'' +
-                ", \n    taskId=" + getTaskId() +
-                ", \n    taskStatus=" + getTaskStatus() +
-                "\n    subTaskCount=" + subTasks.size() +
+                "\n    title='" + title + '\'' +
+                ", \n    description='" + description + '\'' +
+                ", \n    taskId=" + taskId +
+                ", \n    taskStatus=" + taskStatus +
+                "\n    subTaskCount=" + subTaskIds.size() +
                 "\n}";
     }
 }
