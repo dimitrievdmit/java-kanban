@@ -3,11 +3,10 @@ import java.util.Objects;
 public class Task {
     protected String title;
     protected String description;
-    protected final int taskId;
+    protected int taskId;
     protected TaskStatus taskStatus;
 
-    public Task(int taskId, String title, String description, TaskStatus taskStatus) {
-        this.taskId = taskId;
+    public Task(String title, String description, TaskStatus taskStatus) {
         this.title = title;
         this.description = description;
         this.taskStatus = taskStatus;
@@ -31,6 +30,10 @@ public class Task {
 
     public int getTaskId() {
         return taskId;
+    }
+
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
     }
 
     public TaskStatus getTaskStatus() {

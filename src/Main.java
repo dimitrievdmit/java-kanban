@@ -65,66 +65,59 @@ public class Main {
 
     public static void testCreatingTasks(TaskManager taskManager) {
 
-        int taskId = taskManager.getNextTaskId();
         String title = "Задача 1";
         String description = "Протестировать создание обычных задач в статусе Новая.";
         TaskStatus status = TaskStatus.NEW;
-        Task task = new Task(taskId, title, description, status);
-        taskManager.createTask(task);
+        Task task = new Task(title, description, status);
+        int taskId = taskManager.createTask(task);
         assert taskManager.getTaskById(taskId).equals(task);
 
-        taskId = taskManager.getNextTaskId();
         title = "Задача 2";
         description = "Протестировать создание обычных задач в статусе В работе.";
         status = TaskStatus.IN_PROGRESS;
-        task = new Task(taskId, title, description, status);
-        taskManager.createTask(task);
+        task = new Task(title, description, status);
+        taskId = taskManager.createTask(task);
         assert taskManager.getTaskById(taskId).equals(task);
 
-        int epicId = taskManager.getNextTaskId();
         title = "Эпик 1";
         description = "Протестировать создание эпиков.";
         status = TaskStatus.NEW;
-        Epic epic = new Epic(epicId, title, description, status);
-        taskManager.createEpic(epic);
+        Epic epic = new Epic(title, description, status);
+        int epicId = taskManager.createEpic(epic);
         assert taskManager.getEpicById(epicId).equals(epic);
 
-        taskId = taskManager.getNextTaskId();
         title = "Подзадача 1";
         description = "Протестировать создание подзадач в статусе Новая.";
         status = TaskStatus.NEW;
-        SubTask subTask = new SubTask(taskId, title, description, status, epicId);
-        taskManager.createSubTask(subTask);
+        SubTask subTask = new SubTask(title, description, status, epicId);
+        taskId = taskManager.createSubTask(subTask);
         assert taskManager.getSubTaskById(taskId).equals(subTask);
         TaskStatus epicStatus = taskManager.getEpicById(epicId).getTaskStatus();
         assert epicStatus == TaskStatus.NEW;
 
-        taskId = taskManager.getNextTaskId();
         title = "Подзадача 2";
         description = "Протестировать создание подзадач в статусе В работе.";
         status = TaskStatus.IN_PROGRESS;
-        subTask = new SubTask(taskId, title, description, status, epicId);
-        taskManager.createSubTask(subTask);
+        subTask = new SubTask(title, description, status, epicId);
+        taskId = taskManager.createSubTask(subTask);
         assert taskManager.getSubTaskById(taskId).equals(subTask);
         epicStatus = taskManager.getEpicById(epicId).getTaskStatus();
         assert epicStatus == TaskStatus.IN_PROGRESS;
 
-        epicId = taskManager.getNextTaskId();
         title = "Эпик 2";
         description = "Протестировать создание эпиков.";
         status = TaskStatus.DONE;
-        epic = new Epic(epicId, title, description, status);
+        epic = new Epic(title, description, status);
         taskManager.createEpic(epic);
 
         epicStatus = taskManager.getEpicById(epicId).getTaskStatus();
         assert epicStatus == TaskStatus.NEW;
 
-        taskId = taskManager.getNextTaskId();
         title = "Подзадача 3";
         description = "Протестировать создание подзадач в статусе В работе.";
         status = TaskStatus.IN_PROGRESS;
-        subTask = new SubTask(taskId, title, description, status, epicId);
-        taskManager.createSubTask(subTask);
+        subTask = new SubTask(title, description, status, epicId);
+        taskId = taskManager.createSubTask(subTask);
         assert taskManager.getSubTaskById(taskId).equals(subTask);
 
         epicStatus = taskManager.getEpicById(epicId).getTaskStatus();
@@ -177,6 +170,7 @@ public class Main {
     }
 
     public static void testDeletingTask(TaskManager taskManager) {
+        if (taskManager.getTaskArray().isEmpty()) return;
         int taskId = taskManager.getTaskArray().iterator().next().getTaskId();
         taskManager.deleteTaskById(taskId);
 
@@ -185,6 +179,7 @@ public class Main {
     }
 
     public static void testDeletingEpic(TaskManager taskManager) {
+        if (taskManager.getEpicArray().isEmpty()) return;
         int taskId = taskManager.getEpicArray().iterator().next().getTaskId();
         Epic epic = taskManager.getEpicById(taskId);
         ArrayList<Integer> epicSubTaskIds = epic.getSubTaskIds();
@@ -202,6 +197,7 @@ public class Main {
     }
 
     public static void testDeletingSubTask(TaskManager taskManager) {
+        if (taskManager.getSubTaskArray().isEmpty()) return;
         int taskId = taskManager.getSubTaskArray().iterator().next().getTaskId();
         taskManager.deleteSubTaskById(taskId);
 
