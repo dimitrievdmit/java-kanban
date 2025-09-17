@@ -3,64 +3,88 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
         System.out.println();
         System.out.println("===========================");
         System.out.println("Создание задач:");
         testCreatingTasks(taskManager);
-        printTasks(taskManager);
+        printTasksWithHistory(taskManager);
         System.out.println("===========================");
 
         System.out.println();
         System.out.println("===========================");
         System.out.println("Сменить статусы на Выполнено:");
         testChangingTaskStatuses(taskManager, TaskStatus.DONE);
-        printTasks(taskManager);
+        printTasksWithHistory(taskManager);
         System.out.println("===========================");
 
         System.out.println();
         System.out.println("===========================");
         System.out.println("Сменить статусы на В работе:");
         testChangingTaskStatuses(taskManager, TaskStatus.IN_PROGRESS);
-        printTasks(taskManager);
+        printTasksWithHistory(taskManager);
         System.out.println("===========================");
 
         System.out.println();
         System.out.println("===========================");
         System.out.println("Сменить статусы на Новая:");
         testChangingTaskStatuses(taskManager, TaskStatus.NEW);
-        printTasks(taskManager);
+        printTasksWithHistory(taskManager);
         System.out.println("===========================");
 
         System.out.println();
         System.out.println("===========================");
         System.out.println("Удалить обычную задачу:");
         testDeletingTask(taskManager);
-        printTasks(taskManager);
+        printTasksWithHistory(taskManager);
         System.out.println("===========================");
 
         System.out.println();
         System.out.println("===========================");
         System.out.println("Удалить Эпик:");
         testDeletingEpic(taskManager);
-        printTasks(taskManager);
+        printTasksWithHistory(taskManager);
         System.out.println("===========================");
 
         System.out.println();
         System.out.println("===========================");
         System.out.println("Удалить подзадачу:");
         testDeletingSubTask(taskManager);
-        printTasks(taskManager);
+        printTasksWithHistory(taskManager);
         System.out.println("===========================");
 
         System.out.println();
         System.out.println("===========================");
         System.out.println("Удалить все типы задач:");
         taskManager.deleteAllTasksAllTypes();
-        printTasks(taskManager);
+        printTasksWithHistory(taskManager);
         System.out.println("===========================");
 
+    }
+
+    private static void printTasksWithHistory(TaskManager manager) {
+        System.out.println("Задачи:");
+        for (Task task : manager.getTasks()) {
+            System.out.println(task);
+        }
+        System.out.println("Эпики:");
+        for (Task epic : manager.getEpics()) {
+            System.out.println(epic);
+
+            for (Task task : manager.getEpicSubtasks(epic.getTaskId())) {
+                System.out.println("--> " + task);
+            }
+        }
+        System.out.println("Подзадачи:");
+        for (Task subtask : manager.getSubTasks()) {
+            System.out.println(subtask);
+        }
+
+        System.out.println("История:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
     }
 
     public static void testCreatingTasks(TaskManager taskManager) {
@@ -88,7 +112,7 @@ public class Main {
 
         title = "Подзадача 1";
         description = "Протестировать создание подзадач в статусе Новая.";
-        status = TaskStatus.NEW;
+//        status = TaskStatus.NEW;
         SubTask subTask = new SubTask(title, description, status, epicId);
         taskId = taskManager.createSubTask(subTask);
         assert taskManager.getSubTaskById(taskId).equals(subTask);
@@ -125,23 +149,9 @@ public class Main {
 
     }
 
-    public static void printTasks(TaskManager taskManager) {
-        System.out.println();
-        System.out.println("Список задач:");
-        System.out.println(taskManager.getTaskArray());
-
-        System.out.println();
-        System.out.println("Список эпиков:");
-        System.out.println(taskManager.getEpicArray());
-
-        System.out.println();
-        System.out.println("Список подзадач:");
-        System.out.println(taskManager.getSubTaskArray());
-    }
-
     public static void testChangingTaskStatuses(TaskManager taskManager, TaskStatus status) {
 
-        for (Task task : taskManager.getTaskArray()) {
+        for (Task task : taskManager.getTasks()) {
             task.setTaskStatus(status);
             taskManager.updateTask(task);
 
@@ -149,7 +159,7 @@ public class Main {
             assert taskStatus == status;
         }
 
-        for (Epic epic : taskManager.getEpicArray()) {
+        for (Epic epic : taskManager.getEpics()) {
             TaskStatus originalStatus = epic.getTaskStatus();  // Для теста ниже, что статус не изменился.
 
             epic.setTaskStatus(status);
@@ -159,7 +169,7 @@ public class Main {
             assert epicStatus == originalStatus;
         }
 
-        for (SubTask subTask : taskManager.getSubTaskArray()) {
+        for (SubTask subTask : taskManager.getSubTasks()) {
             subTask.setTaskStatus(status);
             taskManager.updateSubTask(subTask);
 
@@ -170,8 +180,8 @@ public class Main {
     }
 
     public static void testDeletingTask(TaskManager taskManager) {
-        if (taskManager.getTaskArray().isEmpty()) return;
-        int taskId = taskManager.getTaskArray().iterator().next().getTaskId();
+        if (taskManager.getTasks().isEmpty()) return;
+        int taskId = taskManager.getTasks().getFirst().getTaskId();
         taskManager.deleteTaskById(taskId);
 
         Task task = taskManager.getTaskById(taskId);
@@ -179,8 +189,8 @@ public class Main {
     }
 
     public static void testDeletingEpic(TaskManager taskManager) {
-        if (taskManager.getEpicArray().isEmpty()) return;
-        int taskId = taskManager.getEpicArray().iterator().next().getTaskId();
+        if (taskManager.getEpics().isEmpty()) return;
+        int taskId = taskManager.getEpics().getFirst().getTaskId();
         Epic epic = taskManager.getEpicById(taskId);
         ArrayList<Integer> epicSubTaskIds = epic.getSubTaskIds();
 
@@ -197,8 +207,8 @@ public class Main {
     }
 
     public static void testDeletingSubTask(TaskManager taskManager) {
-        if (taskManager.getSubTaskArray().isEmpty()) return;
-        int taskId = taskManager.getSubTaskArray().iterator().next().getTaskId();
+        if (taskManager.getSubTasks().isEmpty()) return;
+        int taskId = taskManager.getSubTasks().getFirst().getTaskId();
         taskManager.deleteSubTaskById(taskId);
 
         Task task = taskManager.getSubTaskById(taskId);

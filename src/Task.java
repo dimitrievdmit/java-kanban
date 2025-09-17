@@ -12,6 +12,13 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
+    public Task(int taskId, String title, String description, TaskStatus taskStatus) {
+        this.taskId = taskId;
+        this.title = title;
+        this.description = description;
+        this.taskStatus = taskStatus;
+    }
+
     public String getTitle() {
         return title;
     }
