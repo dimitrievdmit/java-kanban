@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -192,7 +192,7 @@ public class Main {
         if (taskManager.getEpics().isEmpty()) return;
         int taskId = taskManager.getEpics().getFirst().getTaskId();
         Epic epic = taskManager.getEpicById(taskId);
-        ArrayList<Integer> epicSubTaskIds = epic.getSubTaskIds();
+        List<Integer> epicSubTaskIds = epic.getSubTaskIds();
 
         taskManager.deleteEpicById(taskId);
 

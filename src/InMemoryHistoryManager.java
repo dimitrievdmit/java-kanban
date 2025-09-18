@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
@@ -34,7 +35,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             return new SubTask(task.taskId, task.title, task.description, task.taskStatus, ((SubTask) task).getEpicId());
 
         } else if (task.getClass().equals(Epic.class)) {
-            ArrayList<Integer> subTaskIds = ((Epic) task).getSubTaskIds();
+            List<Integer> subTaskIds = ((Epic) task).getSubTaskIds();
             ArrayList<Integer> newSubTaskIds = new ArrayList<>(subTaskIds);
 
             return new Epic(task.taskId, task.title, task.description, task.taskStatus, newSubTaskIds);

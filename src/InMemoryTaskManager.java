@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class InMemoryTaskManager implements TaskManager {
@@ -29,7 +30,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epics.get(epicId);
         if (epic == null) return null;
 
-        ArrayList<Integer> subTaskIds = epic.getSubTaskIds();
+        List<Integer> subTaskIds = epic.getSubTaskIds();
 
         ArrayList<SubTask> subTasks = new ArrayList<>();
         for (Integer subTaskId : subTaskIds) {
