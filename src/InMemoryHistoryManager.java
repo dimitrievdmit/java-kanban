@@ -27,6 +27,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     // Метод нужен, чтобы в истории сохранялась старая версия задачи
+//    Логика не лишняя, так как в ТЗ есть требование ниже:
+//    "убедитесь, что задачи, добавляемые в HistoryManager, сохраняют предыдущую версию задачи и её данных."
     private Task deepCopyTask(Task task) {
         if (task.getClass().equals(Task.class)) {
             return new Task(task.taskId, task.title, task.description, task.taskStatus);
