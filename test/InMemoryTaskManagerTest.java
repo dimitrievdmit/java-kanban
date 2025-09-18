@@ -2,6 +2,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -67,7 +68,7 @@ class InMemoryTaskManagerTest {
         expectedTasks.add(task1);
         expectedTasks.add(task2);
 
-        ArrayList<Task> actualTasks = taskManager.getTasks();
+        List<Task> actualTasks = taskManager.getTasks();
 
         assertNotNull(actualTasks, "Задачи не возвращаются.");
         assertEquals(2, actualTasks.size(), "Неверное количество задач.");
@@ -90,7 +91,7 @@ class InMemoryTaskManagerTest {
         expectedTasks.add(task1);
         expectedTasks.add(task2);
 
-        ArrayList<SubTask> actualTasks = taskManager.getSubTasks();
+        List<SubTask> actualTasks = taskManager.getSubTasks();
 
         assertNotNull(actualTasks, "Задачи не возвращаются.");
         assertEquals(2, actualTasks.size(), "Неверное количество задач.");
@@ -110,7 +111,7 @@ class InMemoryTaskManagerTest {
         expectedTasks.add(task1);
         expectedTasks.add(task2);
 
-        ArrayList<Epic> actualTasks = taskManager.getEpics();
+        List<Epic> actualTasks = taskManager.getEpics();
 
         assertNotNull(actualTasks, "Задачи не возвращаются.");
         assertEquals(2, actualTasks.size(), "Неверное количество задач.");
@@ -134,7 +135,7 @@ class InMemoryTaskManagerTest {
         expectedTasks.add(task1);
         expectedTasks.add(task2);
 
-        ArrayList<SubTask> actualTasks = taskManager.getEpicSubtasks(epicId);
+        List<SubTask> actualTasks = taskManager.getEpicSubtasks(epicId);
 
         assertNotNull(actualTasks, "Задачи не возвращаются.");
         assertEquals(2, actualTasks.size(), "Неверное количество задач.");

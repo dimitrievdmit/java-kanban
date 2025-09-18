@@ -1,14 +1,13 @@
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
-    ArrayList<Task> getTasks();
+    List<Task> getTasks();
 
-    ArrayList<Epic> getEpics();
+    List<Epic> getEpics();
 
-    ArrayList<SubTask> getSubTasks();
+    List<SubTask> getSubTasks();
 
-    ArrayList<SubTask> getEpicSubtasks(int epicId);
+    List<SubTask> getEpicSubtasks(int epicId);
 
     void deleteAllTasks();
 
