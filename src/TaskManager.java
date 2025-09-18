@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
     ArrayList<Task> getTasks();
@@ -41,5 +42,5 @@ public interface TaskManager {
 
     void deleteSubTaskById(Integer taskId);
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 }

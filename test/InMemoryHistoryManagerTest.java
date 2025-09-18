@@ -3,6 +3,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,11 +34,11 @@ class InMemoryHistoryManagerTest {
         Task task = new Task(firstTaskId, title, description, status);
         historyManager.add(task);
 
-        final ArrayList<Task> history = historyManager.getHistory();
+        final List<Task> history = historyManager.getHistory();
         assertNotNull(history, "После добавления задачи, история не должна быть пустой.");
         assertEquals(1, history.size(), "После добавления задачи, история не должна быть пустой.");
 
-        ArrayList<Task> tasks = historyManager.getHistory();
+        List<Task> tasks = historyManager.getHistory();
         Task oldTask = tasks.getFirst();
         updateTask(task);
 
@@ -53,14 +54,14 @@ class InMemoryHistoryManagerTest {
 
         historyManager.add(task);
 
-        final ArrayList<Task> history = historyManager.getHistory();
+        final List<Task> history = historyManager.getHistory();
         assertNotNull(history, "После добавления задачи, история не должна быть пустой.");
         assertEquals(1, history.size(), "После добавления задачи, история не должна быть пустой.");
 
         updateTask(task);
         task.setEpicId(999);
 
-        ArrayList<Task> tasks = historyManager.getHistory();
+        List<Task> tasks = historyManager.getHistory();
         SubTask oldTask = (SubTask) tasks.getFirst();
 
         assertNotEquals(task.title, oldTask.title);
@@ -76,14 +77,14 @@ class InMemoryHistoryManagerTest {
 
         historyManager.add(task);
 
-        final ArrayList<Task> history = historyManager.getHistory();
+        final List<Task> history = historyManager.getHistory();
         assertNotNull(history, "После добавления задачи, история не должна быть пустой.");
         assertEquals(1, history.size(), "После добавления задачи, история не должна быть пустой.");
 
         updateTask(task);
         task.addSubTaskId(999);
 
-        ArrayList<Task> tasks = historyManager.getHistory();
+        List<Task> tasks = historyManager.getHistory();
         Epic oldTask = (Epic) tasks.getFirst();
 
         assertNotEquals(task.title, oldTask.title);
