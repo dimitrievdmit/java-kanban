@@ -463,6 +463,34 @@ class InMemoryTaskManagerTest {
         int wrongEpicId = 999;
         taskManager.updateSubTask(new SubTask(subTaskId, title, description, status, wrongEpicId));
         assertNotEquals(wrongEpicId, taskManager.getSubTaskById(subTaskId).getEpicId());
+
+        int actualEpicId = taskManager.getEpicById(epicId).getTaskId();
+        assertEquals(actualEpicId, epicId);
+    }
+
+    @Test
+    void shouldIgnoreGivenNonExistentSubTaskIdsWhenCreatingEpic() {
+        int taskId = 9999999;
+        Epic task = new Epic(taskId, title, description, status);
+
+        task.addSubTaskId(1);
+        taskManager.createEpic(task);
+
+        List<Integer> expectedSubTaskIds = new ArrayList<>();
+        assertEquals(task.getSubTaskIds(), expectedSubTaskIds);
+    }
+
+    @Test
+    void shouldIgnoreGivenNonExistentSubTaskIdsWhenUpdatingEpic() {
+        int taskId = 9999999;
+        Epic task = new Epic(taskId, title, description, status);
+        taskManager.createEpic(task);
+
+        task.addSubTaskId(1);
+        taskManager.updateEpic(task);
+
+        List<Integer> expectedSubTaskIds = new ArrayList<>();
+        assertEquals(task.getSubTaskIds(), expectedSubTaskIds);
     }
 
 }

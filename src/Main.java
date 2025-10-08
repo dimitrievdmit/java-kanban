@@ -5,6 +5,8 @@ public class Main {
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
 
+        historyManagerTestScenario(taskManager);
+
         System.out.println();
         System.out.println("===========================");
         System.out.println("Создание задач:");
@@ -61,6 +63,12 @@ public class Main {
         printTasksWithHistory(taskManager);
         System.out.println("===========================");
 
+    }
+
+
+    public static void historyManagerTestScenario(TaskManager taskManager) {
+        create2TasksAndEpicWith3Subtasks(taskManager);
+        // доделаю вместе с исправлением замечаний по основному заданию.
     }
 
     private static void printTasksWithHistory(TaskManager manager) {
@@ -214,5 +222,56 @@ public class Main {
         Task task = taskManager.getSubTaskById(taskId);
         assert task == null;
     }
+
+
+    public static void create2TasksAndEpicWith3Subtasks(TaskManager taskManager) {
+
+        String title = "Задача 1";
+        String description = "Протестировать создание обычных задач в статусе Новая.";
+        TaskStatus status = TaskStatus.NEW;
+        Task task = new Task(title, description, status);
+        int taskId = taskManager.createTask(task);
+        assert taskManager.getTaskById(taskId).equals(task);
+
+        title = "Задача 2";
+        description = "Протестировать создание обычных задач в статусе В работе.";
+        status = TaskStatus.IN_PROGRESS;
+        task = new Task(title, description, status);
+        taskId = taskManager.createTask(task);
+        assert taskManager.getTaskById(taskId).equals(task);
+
+        title = "Эпик 1";
+        description = "Протестировать создание эпиков.";
+        status = TaskStatus.NEW;
+        Epic epic = new Epic(title, description, status);
+        int epicId = taskManager.createEpic(epic);
+        assert taskManager.getEpicById(epicId).equals(epic);
+
+        title = "Подзадача 1";
+        description = "Протестировать создание подзадач в статусе Новая.";
+        SubTask subTask = new SubTask(title, description, status, epicId);
+        taskId = taskManager.createSubTask(subTask);
+        assert taskManager.getSubTaskById(taskId).equals(subTask);
+        TaskStatus epicStatus = taskManager.getEpicById(epicId).getTaskStatus();
+        assert epicStatus == TaskStatus.NEW;
+
+        title = "Подзадача 2";
+        description = "Протестировать создание подзадач в статусе В работе.";
+        status = TaskStatus.IN_PROGRESS;
+        subTask = new SubTask(title, description, status, epicId);
+        taskId = taskManager.createSubTask(subTask);
+        assert taskManager.getSubTaskById(taskId).equals(subTask);
+        epicStatus = taskManager.getEpicById(epicId).getTaskStatus();
+        assert epicStatus == TaskStatus.IN_PROGRESS;
+
+        title = "Подзадача 3";
+        description = "Протестировать создание подзадач в статусе В работе.";
+        subTask = new SubTask(title, description, status, epicId);
+        taskId = taskManager.createSubTask(subTask);
+        assert taskManager.getSubTaskById(taskId).equals(subTask);
+        epicStatus = taskManager.getEpicById(epicId).getTaskStatus();
+        assert epicStatus == TaskStatus.IN_PROGRESS;
+    }
+
 
 }
