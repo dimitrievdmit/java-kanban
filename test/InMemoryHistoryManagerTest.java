@@ -125,6 +125,7 @@ class InMemoryHistoryManagerTest {
 
         return taskArrayList;
     }
+
     @Test
     void shouldReassignLinksWhenDeletingFirstNode() {
         int firstId = 1;
