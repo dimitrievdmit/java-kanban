@@ -2,23 +2,20 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    public static class Node<E> {
-        E item;
-        Node<E> next;
-        Node<E> prev;
+    private final Map<Integer, Node<Task>> taskHistory = new HashMap<>();
+    private Node<Task> head;
+    private Node<Task> tail;
 
-        Node(Node<E> prev, E element, Node<E> next) {
-            this.item = element;
-            this.next = next;
-            this.prev = prev;
-        }
+    public Node<Task> getHead() {
+        return head;
     }
 
-    private final Map<Integer, Node<Task>> taskHistory = new HashMap<>();
-    public Node<Task> head;
-    public Node<Task> tail;
+    public Node<Task> getTail() {
+        return tail;
+    }
 
-    private void linkLast(Task task) {
+    private void linkLast(int taskId,  Task task) {
+        remove(taskId);
         final Node<Task> prevTail = tail;
         final Node<Task> newNode = new Node<>(prevTail, task, null);
         tail = newNode;
@@ -26,6 +23,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             head = newNode;
         else
             prevTail.next = newNode;
+        taskHistory.put(taskId, tail);
     }
 
     @Override
@@ -34,10 +32,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         Task taskCopy = deepCopyTask(task);
         if (taskCopy == null) return;
 
-        Integer taskId = task.getTaskId();
-        removeNode(taskHistory.get(taskId));
-        linkLast(taskCopy);
-        taskHistory.put(taskId, tail);
+        int taskId = task.getTaskId();
+        linkLast(taskId, taskCopy);
     }
 
     private void removeNode(Node<Task> nodeToRemove) {
@@ -99,6 +95,18 @@ public class InMemoryHistoryManager implements HistoryManager {
             return new Epic(task.taskId, task.title, task.description, task.taskStatus, newSubTaskIds);
         } else {
             return null;
+        }
+    }
+
+    public static class Node<E> {
+        E item;
+        Node<E> next;
+        Node<E> prev;
+
+        Node(Node<E> prev, E element, Node<E> next) {
+            this.item = element;
+            this.next = next;
+            this.prev = prev;
         }
     }
 }

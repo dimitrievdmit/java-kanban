@@ -135,8 +135,8 @@ class InMemoryHistoryManagerTest {
 
         historyManager.remove(firstId);
 
-        assertEquals(inMemoryHistoryManager.head.item, taskArrayList.get(1));
-        assertEquals(inMemoryHistoryManager.tail.item, taskArrayList.getLast());
+        assertEquals(inMemoryHistoryManager.getHead().item, taskArrayList.get(1));
+        assertEquals(inMemoryHistoryManager.getTail().item, taskArrayList.getLast());
     }
 
     @Test
@@ -148,8 +148,8 @@ class InMemoryHistoryManagerTest {
 
         historyManager.remove(secondId);
 
-        assertEquals(inMemoryHistoryManager.head.item, taskArrayList.getFirst());
-        assertEquals(inMemoryHistoryManager.tail.item, taskArrayList.getLast());
+        assertEquals(inMemoryHistoryManager.getHead().item, taskArrayList.getFirst());
+        assertEquals(inMemoryHistoryManager.getTail().item, taskArrayList.getLast());
     }
 
     @Test
@@ -161,8 +161,8 @@ class InMemoryHistoryManagerTest {
 
         historyManager.remove(thirdId);
 
-        assertEquals(inMemoryHistoryManager.head.item, taskArrayList.getFirst());
-        assertEquals(inMemoryHistoryManager.tail.item, taskArrayList.get(1));
+        assertEquals(inMemoryHistoryManager.getHead().item, taskArrayList.getFirst());
+        assertEquals(inMemoryHistoryManager.getTail().item, taskArrayList.get(1));
     }
 
 }
