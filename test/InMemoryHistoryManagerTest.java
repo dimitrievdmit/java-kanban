@@ -131,12 +131,14 @@ class InMemoryHistoryManagerTest {
         int firstId = 1;
         int secondId = 2;
         int thirdId = 3;
-        ArrayList<Task> taskArrayList = setupThreeTasks(firstId, secondId, thirdId);
+        ArrayList<Task> expectedTaskArrayList = setupThreeTasks(firstId, secondId, thirdId);
 
         historyManager.remove(firstId);
 
-        assertEquals(inMemoryHistoryManager.getHead().item, taskArrayList.get(1));
-        assertEquals(inMemoryHistoryManager.getTail().item, taskArrayList.getLast());
+        List<Task> actualTaskArrayList = historyManager.getHistory();
+
+        assertEquals(expectedTaskArrayList.get(1), actualTaskArrayList.getFirst());
+        assertEquals(expectedTaskArrayList.getLast(), actualTaskArrayList.getLast());
     }
 
     @Test
@@ -144,12 +146,14 @@ class InMemoryHistoryManagerTest {
         int firstId = 1;
         int secondId = 2;
         int thirdId = 3;
-        ArrayList<Task> taskArrayList = setupThreeTasks(firstId, secondId, thirdId);
+        ArrayList<Task> expectedTaskArrayList = setupThreeTasks(firstId, secondId, thirdId);
 
         historyManager.remove(secondId);
 
-        assertEquals(inMemoryHistoryManager.getHead().item, taskArrayList.getFirst());
-        assertEquals(inMemoryHistoryManager.getTail().item, taskArrayList.getLast());
+        List<Task> actualTaskArrayList = historyManager.getHistory();
+
+        assertEquals(expectedTaskArrayList.getFirst(), actualTaskArrayList.getFirst());
+        assertEquals(expectedTaskArrayList.getLast(), actualTaskArrayList.getLast());
     }
 
     @Test
@@ -157,12 +161,25 @@ class InMemoryHistoryManagerTest {
         int firstId = 1;
         int secondId = 2;
         int thirdId = 3;
-        ArrayList<Task> taskArrayList = setupThreeTasks(firstId, secondId, thirdId);
+        ArrayList<Task> expectedTaskArrayList = setupThreeTasks(firstId, secondId, thirdId);
 
         historyManager.remove(thirdId);
 
-        assertEquals(inMemoryHistoryManager.getHead().item, taskArrayList.getFirst());
-        assertEquals(inMemoryHistoryManager.getTail().item, taskArrayList.get(1));
+        List<Task> actualTaskArrayList = historyManager.getHistory();
+
+        assertEquals(expectedTaskArrayList.getFirst(), actualTaskArrayList.getFirst());
+        assertEquals(expectedTaskArrayList.get(1), actualTaskArrayList.getLast());
+    }
+
+    @Test
+    void shouldHaveNoRepeatsInHistory() {
+        Task task = new Task(firstTaskId, firstTitle, firstDescription, firstStatus);
+        historyManager.add(task);
+        historyManager.add(task);
+
+        List<Task> actualTaskArrayList = historyManager.getHistory();
+
+        assertEquals(1, actualTaskArrayList.size());
     }
 
 }

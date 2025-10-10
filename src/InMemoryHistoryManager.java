@@ -6,14 +6,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node<Task> head;
     private Node<Task> tail;
 
-    public Node<Task> getHead() {
-        return head;
-    }
-
-    public Node<Task> getTail() {
-        return tail;
-    }
-
     private void linkLast(int taskId,  Task task) {
         final Node<Task> prevTail = tail;
         final Node<Task> newNode = new Node<>(prevTail, task, null);
