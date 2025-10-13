@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class InMemoryHistoryManagerTest {
     HistoryManager historyManager;
     InMemoryHistoryManager inMemoryHistoryManager;
-    private final String title = "testTitle";
-    private final String description = "testDescription";
-    private final TaskStatus status = TaskStatus.NEW;
+    private final String firstTitle = "testTitle";
+    private final String firstDescription = "testDescription";
+    private final TaskStatus firstStatus = TaskStatus.NEW;
     private static final int firstTaskId = 1;
     private static final int firstTaskEpicId = 2;
     private static final ArrayList<Integer> firstEpicSubTasks = new ArrayList<>(Arrays.asList(1, 2));
@@ -31,7 +31,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldKeepOldTaskVersions() {
-        Task task = new Task(firstTaskId, title, description, status);
+        Task task = new Task(firstTaskId, firstTitle, firstDescription, firstStatus);
         historyManager.add(task);
 
         final List<Task> history = historyManager.getHistory();
@@ -50,7 +50,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldKeepOldSubTaskVersions() {
-        SubTask task = new SubTask(firstTaskId, title, description, status, firstTaskEpicId);
+        SubTask task = new SubTask(firstTaskId, firstTitle, firstDescription, firstStatus, firstTaskEpicId);
 
         historyManager.add(task);
 
@@ -73,7 +73,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldKeepOldEpicVersions() {
-        Epic task = new Epic(firstTaskId, title, description, status, firstEpicSubTasks);
+        Epic task = new Epic(firstTaskId, firstTitle, firstDescription, firstStatus, firstEpicSubTasks);
 
         historyManager.add(task);
 
@@ -95,16 +95,91 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void shouldRemoveFirstWhenAddingAboveLimit() {
-        int historyManagerLimit = inMemoryHistoryManager.getLimit();
+    void shouldRemoveExistingTaskWhenAddingTaskAgain() {
+        Task task = new Task(firstTaskId, firstTitle, firstDescription, firstStatus);
+        historyManager.add(task);
 
-        for (int i = firstTaskId; i < (firstTaskId + historyManagerLimit + 1); i++) {
-            String newTitle = title + i;
-            Task task = new Task(i, newTitle, description, status);
-            historyManager.add(task);
-        }
-        int newFirstTaskId = historyManager.getHistory().getFirst().getTaskId();
-        assertEquals(firstTaskId, (newFirstTaskId - 1));
+        updateTask(task);
+        historyManager.add(task);
+
+        assertNotEquals(firstTitle, task.title);
+        assertNotEquals(firstDescription, task.description);
+        assertNotEquals(firstStatus, task.taskStatus);
+
+    }
+
+    ArrayList<Task> setupThreeTasks(int firstId, int secondId, int thirdId) {
+        Task task = new Task(firstId, firstTitle, firstDescription, firstStatus);
+        historyManager.add(task);
+
+        Task task2 = new Task(secondId, "secondTitle", "secondDescription", firstStatus);
+        historyManager.add(task2);
+
+        Task task3 = new Task(thirdId, "thirdTitle", "thirdDescription", firstStatus);
+        historyManager.add(task3);
+
+        ArrayList<Task> taskArrayList = new ArrayList<>();
+        taskArrayList.add(task);
+        taskArrayList.add(task2);
+        taskArrayList.add(task3);
+
+        return taskArrayList;
+    }
+
+    @Test
+    void shouldReassignLinksWhenDeletingFirstNode() {
+        int firstId = 1;
+        int secondId = 2;
+        int thirdId = 3;
+        ArrayList<Task> expectedTaskArrayList = setupThreeTasks(firstId, secondId, thirdId);
+
+        historyManager.remove(firstId);
+
+        List<Task> actualTaskArrayList = historyManager.getHistory();
+
+        assertEquals(expectedTaskArrayList.get(1), actualTaskArrayList.getFirst());
+        assertEquals(expectedTaskArrayList.getLast(), actualTaskArrayList.getLast());
+    }
+
+    @Test
+    void shouldReassignLinksWhenDeletingMiddleNode() {
+        int firstId = 1;
+        int secondId = 2;
+        int thirdId = 3;
+        ArrayList<Task> expectedTaskArrayList = setupThreeTasks(firstId, secondId, thirdId);
+
+        historyManager.remove(secondId);
+
+        List<Task> actualTaskArrayList = historyManager.getHistory();
+
+        assertEquals(expectedTaskArrayList.getFirst(), actualTaskArrayList.getFirst());
+        assertEquals(expectedTaskArrayList.getLast(), actualTaskArrayList.getLast());
+    }
+
+    @Test
+    void shouldReassignLinksWhenDeletingLastNode() {
+        int firstId = 1;
+        int secondId = 2;
+        int thirdId = 3;
+        ArrayList<Task> expectedTaskArrayList = setupThreeTasks(firstId, secondId, thirdId);
+
+        historyManager.remove(thirdId);
+
+        List<Task> actualTaskArrayList = historyManager.getHistory();
+
+        assertEquals(expectedTaskArrayList.getFirst(), actualTaskArrayList.getFirst());
+        assertEquals(expectedTaskArrayList.get(1), actualTaskArrayList.getLast());
+    }
+
+    @Test
+    void shouldHaveNoRepeatsInHistory() {
+        Task task = new Task(firstTaskId, firstTitle, firstDescription, firstStatus);
+        historyManager.add(task);
+        historyManager.add(task);
+
+        List<Task> actualTaskArrayList = historyManager.getHistory();
+
+        assertEquals(1, actualTaskArrayList.size());
     }
 
 }

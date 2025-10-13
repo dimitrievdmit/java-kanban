@@ -1,9 +1,14 @@
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Main {
 
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
+
+        historyManagerUserScenario(taskManager);
 
         System.out.println();
         System.out.println("===========================");
@@ -60,6 +65,57 @@ public class Main {
         taskManager.deleteAllTasksAllTypes();
         printTasksWithHistory(taskManager);
         System.out.println("===========================");
+
+    }
+
+
+    public static void historyManagerUserScenario(TaskManager taskManager) {
+
+        // Создаём две задачи, эпик с тремя подзадачами и эпик без подзадач.
+        List<Integer> taskIds = create2TasksAndEpicWith3Subtasks(taskManager);
+        int taskId1 = taskIds.get(0);
+        int taskId2 = taskIds.get(1);
+        int epicId = taskIds.get(2);
+        int subTaskId1 = taskIds.get(3);
+        int subTaskId2 = taskIds.get(4);
+        int subTaskId3 = taskIds.get(5);
+        int epicIdWithNoSubTasks = taskIds.get(6);
+
+//        Запрашиваем созданные задачи в разном порядке
+        taskManager.getTaskById(taskId1);
+        taskManager.getTaskById(taskId2);
+
+        taskManager.getTaskById(epicId);
+        taskManager.getTaskById(subTaskId2);
+
+        taskManager.getTaskById(epicIdWithNoSubTasks);
+
+        taskManager.getTaskById(subTaskId1);
+        taskManager.getTaskById(subTaskId2);
+        taskManager.getTaskById(subTaskId3);
+        taskManager.getTaskById(subTaskId1);
+
+        // Проверяем, что в истории нет повторов.
+        List<Task> actualHistoryList = taskManager.getHistory();
+        Set<Task> actualHistorySet = new HashSet<>(actualHistoryList);
+        assert actualHistoryList.size() == actualHistorySet.size();
+
+        // Проверяем, что удалённая задача пропадает из истории тоже.
+        taskManager.deleteTaskById(taskId1);
+        actualHistoryList = taskManager.getHistory();
+        for (Task iTask : actualHistoryList) {
+            assert iTask.getTaskId() != taskId1;
+        }
+
+        // Проверяем, что с удаленным эпиком из истории пропадают и подзадачи.
+        taskManager.deleteEpicById(epicId);
+        actualHistoryList = taskManager.getHistory();
+        for (Task iTask : actualHistoryList) {
+            assert iTask.getTaskId() != epicId;
+            assert iTask.getTaskId() != subTaskId1;
+            assert iTask.getTaskId() != subTaskId2;
+            assert iTask.getTaskId() != subTaskId3;
+        }
 
     }
 
@@ -214,5 +270,74 @@ public class Main {
         Task task = taskManager.getSubTaskById(taskId);
         assert task == null;
     }
+
+
+    public static List<Integer> create2TasksAndEpicWith3Subtasks(TaskManager taskManager) {
+
+        List<Integer> taskIds = new ArrayList<>();
+
+        String title = "Задача 1";
+        String description = "Протестировать создание обычных задач в статусе Новая.";
+        TaskStatus status = TaskStatus.NEW;
+        Task task = new Task(title, description, status);
+        int taskId = taskManager.createTask(task);
+        assert taskManager.getTaskById(taskId).equals(task);
+        taskIds.add(taskId);
+
+        title = "Задача 2";
+        description = "Протестировать создание обычных задач в статусе В работе.";
+        status = TaskStatus.IN_PROGRESS;
+        task = new Task(title, description, status);
+        taskId = taskManager.createTask(task);
+        assert taskManager.getTaskById(taskId).equals(task);
+        taskIds.add(taskId);
+
+        title = "Эпик 1";
+        description = "Протестировать создание эпиков.";
+        status = TaskStatus.NEW;
+        Epic epic = new Epic(title, description, status);
+        int epicId = taskManager.createEpic(epic);
+        assert taskManager.getEpicById(epicId).equals(epic);
+        taskIds.add(epicId);
+
+        title = "Подзадача 1";
+        description = "Протестировать создание подзадач в статусе Новая.";
+        SubTask subTask = new SubTask(title, description, status, epicId);
+        taskId = taskManager.createSubTask(subTask);
+        assert taskManager.getSubTaskById(taskId).equals(subTask);
+        TaskStatus epicStatus = taskManager.getEpicById(epicId).getTaskStatus();
+        assert epicStatus == TaskStatus.NEW;
+        taskIds.add(taskId);
+
+        title = "Подзадача 2";
+        description = "Протестировать создание подзадач в статусе В работе.";
+        status = TaskStatus.IN_PROGRESS;
+        subTask = new SubTask(title, description, status, epicId);
+        taskId = taskManager.createSubTask(subTask);
+        assert taskManager.getSubTaskById(taskId).equals(subTask);
+        epicStatus = taskManager.getEpicById(epicId).getTaskStatus();
+        assert epicStatus == TaskStatus.IN_PROGRESS;
+        taskIds.add(taskId);
+
+        title = "Подзадача 3";
+        description = "Протестировать создание подзадач в статусе В работе.";
+        subTask = new SubTask(title, description, status, epicId);
+        taskId = taskManager.createSubTask(subTask);
+        assert taskManager.getSubTaskById(taskId).equals(subTask);
+        epicStatus = taskManager.getEpicById(epicId).getTaskStatus();
+        assert epicStatus == TaskStatus.IN_PROGRESS;
+        taskIds.add(taskId);
+
+        title = "Эпик 1";
+        description = "Протестировать создание эпиков.";
+        status = TaskStatus.NEW;
+        Epic epic2 = new Epic(title, description, status);
+        int epicId2 = taskManager.createEpic(epic2);
+        assert taskManager.getEpicById(epicId2).equals(epic);
+        taskIds.add(epicId2);
+
+        return taskIds;
+    }
+
 
 }

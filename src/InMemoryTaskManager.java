@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class InMemoryTaskManager implements TaskManager {
@@ -18,7 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Epic> getEpics() {
-        return  new ArrayList<>(epics.values());
+        return new ArrayList<>(epics.values());
     }
 
     @Override
@@ -46,24 +43,35 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        tasks.clear();
+        // в связи с усложнением логики методов удаления отдельных задач, метод clear() уже не подходит.
+        Set<Integer> independentKeySet = new HashSet<>(tasks.keySet());
+        for (Integer taskId : independentKeySet) {
+            deleteTaskById(taskId);
+        }
     }
 
     @Override
     public void deleteAllEpics() {
-        epics.clear();
-        deleteAllSubTasks();
+        // в связи с усложнением логики методов удаления отдельных задач, метод clear() уже не подходит
+        Set<Integer> independentKeySet = new HashSet<>(epics.keySet());
+        for (Integer taskId : independentKeySet) {
+            deleteEpicById(taskId);
+        }
     }
 
     @Override
     public void deleteAllSubTasks() {
-        subTasks.clear();
+        // в связи с усложнением логики методов удаления отдельных задач, метод clear() уже не подходит.
+        Set<Integer> independentKeySet = new HashSet<>(subTasks.keySet());
+        for (Integer taskId : independentKeySet) {
+            deleteSubTaskById(taskId);
+        }
     }
 
     @Override
     public void deleteAllTasksAllTypes() {
         deleteAllTasks();
-        deleteAllEpics();
+        deleteAllEpics();          // deleteAllEpics включает в себя удаление подзадач
         nextTaskId = 0;
     }
 
@@ -105,6 +113,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         // Перезаписать статус на NEW, так как нет подзадач
         task.setTaskStatus(TaskStatus.NEW);
+        excludeNonExistentSubTaskIds(task);
         epics.put(taskId, task);
         return taskId;
     }
@@ -134,6 +143,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateEpic(Epic task) {
         if (!epics.containsKey(task.getTaskId())) return;
+        excludeNonExistentSubTaskIds(task);
         epics.put(task.getTaskId(), task);
         updateEpicStatus(task);
     }
@@ -152,12 +162,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTaskById(Integer taskId) {
         tasks.remove(taskId);
+        historyManager.remove(taskId);
     }
 
     @Override
     public void deleteEpicById(Integer taskId) {
         Epic epic = getEpicById(taskId);
         epics.remove(taskId);
+        historyManager.remove(taskId);
 
         if (epic.getSubTaskIds().isEmpty()) return;
         for (Integer subTaskId : epic.getSubTaskIds()) {
@@ -169,6 +181,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubTaskById(Integer taskId) {
         SubTask subtask = getSubTaskById(taskId);
         subTasks.remove(taskId);
+        historyManager.remove(taskId);
         Epic epic = epics.get(subtask.getEpicId());
         if (epic == null) return;
         if (!epic.getSubTaskIds().contains(taskId)) return;
@@ -214,5 +227,14 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         epic.setTaskStatus(TaskStatus.IN_PROGRESS);
+    }
+
+    private void excludeNonExistentSubTaskIds(Epic epic) {
+        Set<Integer> independentKeySet = new HashSet<>(epic.getSubTaskIds());
+        for (Integer subTaskId : independentKeySet) {
+            if (!subTasks.containsKey(subTaskId)) {
+                epic.removeSubTaskId(subTaskId);
+            }
+        }
     }
 }
