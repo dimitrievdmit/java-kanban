@@ -7,6 +7,7 @@ import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// Наследует класс InMemoryTaskManagerTest, чтобы повторить все тесты для нового менеджера
 class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
     private File saveFile;
 
