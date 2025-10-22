@@ -31,4 +31,17 @@ public class SubTask extends Task {
                 "\n    epicId=" + epicId +
                 "\n}";
     }
+
+    public String toCsvString() {
+        String epicIdStr = String.valueOf(epicId);
+        return String.format(
+                "%s,%s,%s,%s,%s,%s",
+                taskId,
+                TaskType.SUBTASK,
+                title,
+                taskStatus,
+                description,
+                epicIdStr
+        );
+    }
 }

@@ -8,14 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 class InMemoryTaskManagerTest {
-    private TaskManager taskManager;
-    private final String title = "testTitle";
-    private final String description = "testDescription";
-    private final TaskStatus status = TaskStatus.NEW;
+    protected TaskManager taskManager;
+    protected final String title = "testTitle";
+    protected final String description = "testDescription";
+    protected final TaskStatus status = TaskStatus.NEW;
 
-    private final String newTitle = "new" + title;
-    private final String newDescription = "new" + description;
-    private final TaskStatus newStatus = TaskStatus.IN_PROGRESS;
+    protected final String newTitle = "new" + title;
+    protected final String newDescription = "new" + description;
+    protected final TaskStatus newStatus = TaskStatus.IN_PROGRESS;
 
     @BeforeEach
     void setup() {

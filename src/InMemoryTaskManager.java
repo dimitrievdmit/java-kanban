@@ -2,11 +2,32 @@ import java.util.*;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    private int nextTaskId = 1;
-    private final Map<Integer, Task> tasks = new HashMap<>();
-    private final Map<Integer, Epic> epics = new HashMap<>();
-    private final Map<Integer, SubTask> subTasks = new HashMap<>();
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected int nextTaskId = 1;
+    protected final Map<Integer, Task> tasks;
+    protected final Map<Integer, Epic> epics;
+    protected final Map<Integer, SubTask> subTasks;
+    protected final HistoryManager historyManager;
+
+    public InMemoryTaskManager() {
+        tasks = new HashMap<>();
+        epics = new HashMap<>();
+        subTasks = new HashMap<>();
+        historyManager = Managers.getDefaultHistory();
+    }
+
+    public InMemoryTaskManager(
+            int nextTaskId,
+            Map<Integer, Task> tasks,
+            Map<Integer, Epic> epics,
+            Map<Integer, SubTask> subTasks,
+            HistoryManager historyManager
+    ) {
+        this.nextTaskId = nextTaskId;
+        this.tasks = tasks;
+        this.epics = epics;
+        this.subTasks = subTasks;
+        this.historyManager = historyManager;
+    }
 
     @Override
     public List<Task> getTasks() {
@@ -21,6 +42,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<SubTask> getSubTasks() {
         return new ArrayList<>(subTasks.values());
+    }
+
+    @Override
+    public List<Task> getAllTasksAllTypes() {
+        List<Task> allTasks = new ArrayList<>(getTasks());
+        allTasks.addAll(getEpics());
+        allTasks.addAll(getSubTasks());
+        return allTasks;
     }
 
     @Override
