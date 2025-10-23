@@ -3,31 +3,10 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     protected int nextTaskId = 1;
-    protected final Map<Integer, Task> tasks;
-    protected final Map<Integer, Epic> epics;
-    protected final Map<Integer, SubTask> subTasks;
-    protected final HistoryManager historyManager;
-
-    public InMemoryTaskManager() {
-        tasks = new HashMap<>();
-        epics = new HashMap<>();
-        subTasks = new HashMap<>();
-        historyManager = Managers.getDefaultHistory();
-    }
-
-    public InMemoryTaskManager(
-            int nextTaskId,
-            Map<Integer, Task> tasks,
-            Map<Integer, Epic> epics,
-            Map<Integer, SubTask> subTasks,
-            HistoryManager historyManager
-    ) {
-        this.nextTaskId = nextTaskId;
-        this.tasks = tasks;
-        this.epics = epics;
-        this.subTasks = subTasks;
-        this.historyManager = historyManager;
-    }
+    protected final Map<Integer, Task> tasks = new HashMap<>();
+    protected final Map<Integer, Epic> epics = new HashMap<>();
+    protected final Map<Integer, SubTask> subTasks = new HashMap<>();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public List<Task> getTasks() {

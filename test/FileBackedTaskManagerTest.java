@@ -17,7 +17,7 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         try {
             saveFile = File.createTempFile("FileBackedTaskManagerTestFile", null);
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Ошибка при работе с файлом сохранения.", e);
         }
         taskManager = new FileBackedTaskManager(saveFile);
     }

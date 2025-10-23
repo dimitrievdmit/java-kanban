@@ -75,15 +75,13 @@ public class Task {
     }
 
     public String toCsvString() {
-        String epicIdStr = "";
         return String.format(
-                "%s,%s,%s,%s,%s,%s",
+                "%s,%s,%s,%s,%s,",
                 taskId,
                 TaskType.TASK,
                 title,
                 taskStatus,
-                description,
-                epicIdStr
+                description
         );
     }
 }

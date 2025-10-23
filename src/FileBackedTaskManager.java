@@ -11,11 +11,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.saveFile = saveFile;
     }
 
-    public FileBackedTaskManager(InMemoryTaskManager manager, File saveFile) {
-        super(manager.nextTaskId, manager.tasks, manager.epics, manager.subTasks, manager.historyManager);
-        this.saveFile = saveFile;
-    }
-
     @Override
     public int createTask(Task task) {
         int taskId = super.createTask(task);
@@ -106,7 +101,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 writer.write(String.format("%s\n", task.toCsvString()));
             }
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Ошибка при работе с файлом сохранения.", e);
         }
     }
 
@@ -136,24 +131,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTaskManager loadFromFile(File saveFile) {
-        InMemoryTaskManager tempManager = new InMemoryTaskManager();
+        FileBackedTaskManager manager = new FileBackedTaskManager(saveFile);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(saveFile, StandardCharsets.UTF_8))) {
             reader.readLine(); // пропустить заголовок
             while (reader.ready()) {
                 Task task = fromCsvString(reader.readLine());
                 if (task instanceof Epic epic) {
-                    tempManager.createEpic(epic);
+                    manager.epics.put(epic.getTaskId(), epic);
                 } else if (task instanceof SubTask subTask) {
-                    tempManager.createSubTask(subTask);
+                    Integer subTaskId = subTask.getTaskId();
+                    manager.subTasks.put(subTaskId, subTask);
+                    // ниже не должно быть null из-за сортировки при сохранении файла
+                    manager.epics.get(subTask.getEpicId()).addSubTaskId(subTaskId);
+
                 } else if (task != null) {
-                    tempManager.createTask(task);
+                    manager.tasks.put(task.getTaskId(), task);
                 }
             }
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Ошибка при работе с файлом сохранения.", e);
         }
-        return new FileBackedTaskManager(tempManager, saveFile);
+        return manager;
     }
 
     public static void main(String[] args) {
@@ -164,7 +163,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             tmpSaveFile = File.createTempFile("FileBackedTaskManagerTestFile", null);
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Ошибка при работе с файлом сохранения.", e);
         }
         FileBackedTaskManager taskManager = new FileBackedTaskManager(tmpSaveFile);
         final String title = "testTitle";
