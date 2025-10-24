@@ -2,11 +2,11 @@ import java.util.*;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    private int nextTaskId = 1;
-    private final Map<Integer, Task> tasks = new HashMap<>();
-    private final Map<Integer, Epic> epics = new HashMap<>();
-    private final Map<Integer, SubTask> subTasks = new HashMap<>();
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected int nextTaskId = 1;
+    protected final Map<Integer, Task> tasks = new HashMap<>();
+    protected final Map<Integer, Epic> epics = new HashMap<>();
+    protected final Map<Integer, SubTask> subTasks = new HashMap<>();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public List<Task> getTasks() {
@@ -21,6 +21,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<SubTask> getSubTasks() {
         return new ArrayList<>(subTasks.values());
+    }
+
+    @Override
+    public List<Task> getAllTasksAllTypes() {
+        List<Task> allTasks = new ArrayList<>(getTasks());
+        allTasks.addAll(getEpics());
+        allTasks.addAll(getSubTasks());
+        return allTasks;
     }
 
     @Override

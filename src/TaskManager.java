@@ -7,6 +7,8 @@ public interface TaskManager {
 
     List<SubTask> getSubTasks();
 
+    List<Task> getAllTasksAllTypes();
+
     List<SubTask> getEpicSubtasks(int epicId);
 
     void deleteAllTasks();

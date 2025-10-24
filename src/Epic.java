@@ -40,4 +40,15 @@ public class Epic extends Task {
                 "\n    subTaskCount=" + subTaskIds.size() +
                 "\n}";
     }
+
+    public String toCsvString() {
+        return String.format(
+                "%s,%s,%s,%s,%s,",
+                taskId,
+                TaskType.EPIC,
+                title,
+                taskStatus,
+                description
+        );
+    }
 }
