@@ -1,9 +1,13 @@
+import exceptions.ManagerSaveException;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    public static final String SAVE_FILE_HEADER = "id,type,name,status,description,epic";
+    public static final String SAVE_FILE_HEADER = "id,type,name,status,description,epic,duration,startTime,endTime";
     private static final int SAVE_FILE_HEADER_LEN = SAVE_FILE_HEADER.split(",").length;
     private final File saveFile;
 
@@ -97,9 +101,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.write(String.format("%s\n", SAVE_FILE_HEADER));
             List<Task> tasks = getAllTasksAllTypes();
             tasks.sort(new TaskIdComparator());
-            for (Task task : tasks) {
-                writer.write(String.format("%s\n", task.toCsvString()));
-            }
+
+            tasks.forEach(task -> {
+                try {
+                    writer.write(String.format("%s\n", task.toCsvString()));
+                } catch (IOException e) {
+                    throw new ManagerSaveException("Ошибка при работе с файлом сохранения.", e);
+                }
+            });
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при работе с файлом сохранения.", e);
         }
@@ -114,17 +123,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String title = stringRow[2];
         TaskStatus taskStatus = TaskStatus.valueOf(stringRow[3]);
         String description = stringRow[4];
+        Duration duration = stringRow[6].isEmpty() ? null : Duration.ofMinutes(Long.parseLong(stringRow[6]));
+        LocalDateTime startTime = stringRow[7].isEmpty() ? null : LocalDateTime.parse(stringRow[7]);
 
         switch (taskType) {
             case TASK -> {
-                return new Task(taskId, title, description, taskStatus);
+                return new Task(taskId, title, description, taskStatus, duration, startTime);
             }
             case EPIC -> {
-                return new Epic(taskId, title, description, taskStatus);
+                LocalDateTime endTime = stringRow[8].isEmpty() ? null : LocalDateTime.parse(stringRow[8]);
+                return new Epic(taskId, title, description, taskStatus, duration, startTime, endTime);
             }
             case SUBTASK -> {
                 int epicId = Integer.parseInt(stringRow[5]);
-                return new SubTask(taskId, title, description, taskStatus, epicId);
+                return new SubTask(taskId, title, description, taskStatus, epicId, duration, startTime);
             }
             default -> throw new IllegalArgumentException(String.format("Неизвестный тип задачи: %s", taskType));
         }

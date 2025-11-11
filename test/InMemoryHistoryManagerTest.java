@@ -182,4 +182,12 @@ class InMemoryHistoryManagerTest {
         assertEquals(1, actualTaskArrayList.size());
     }
 
+    @Test
+    void shouldNotBreakToHellWhenAddingTaskToEmptyHistory() {
+        Task task = new Task(firstTaskId, firstTitle, firstDescription, firstStatus);
+        historyManager.add(task);
+        List<Task> actualTaskArrayList = historyManager.getHistory();
+        assertEquals(1, actualTaskArrayList.size(), "Задача не добавилась в пустую историю.");
+    }
+
 }

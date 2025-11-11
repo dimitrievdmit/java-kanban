@@ -1,3 +1,5 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -5,6 +7,8 @@ public class Task {
     protected String description;
     protected int taskId;
     protected TaskStatus taskStatus;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
     public Task(String title, String description, TaskStatus taskStatus) {
         this.title = title;
@@ -12,11 +16,28 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
+    public Task(String title, String description, TaskStatus taskStatus, Duration duration, LocalDateTime startTime) {
+        this.title = title;
+        this.description = description;
+        this.taskStatus = taskStatus;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
     public Task(int taskId, String title, String description, TaskStatus taskStatus) {
         this.taskId = taskId;
         this.title = title;
         this.description = description;
         this.taskStatus = taskStatus;
+    }
+
+    public Task(int taskId, String title, String description, TaskStatus taskStatus, Duration duration, LocalDateTime startTime) {
+        this.title = title;
+        this.description = description;
+        this.taskId = taskId;
+        this.taskStatus = taskStatus;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public String getTitle() {
@@ -51,6 +72,27 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (this.getStartTime() == null || this.getDuration() == null) return null;
+        return startTime.plus(duration);
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -76,13 +118,30 @@ public class Task {
 
     public String toCsvString() {
         return String.format(
-                "%s,%s,%s,%s,%s,",
+                "%s,%s,%s,%s,%s,,%s,%s,",
                 taskId,
                 TaskType.TASK,
                 title,
                 taskStatus,
-                description
+                description,
+                duration == null ? "" : duration.toMinutes(),
+                startTime == null ? "" : startTime
         );
+    }
+
+    public boolean tasksIntersect(Task otherTask) {
+        if (this.getEndTime() == null) return false;
+        if (otherTask == null || otherTask.getEndTime() == null) return false;
+
+        if (this.getStartTime().isEqual(otherTask.getStartTime())) return true;
+        if (this.getEndTime().isEqual(otherTask.getEndTime())) return true;
+        if (
+                this.getStartTime().isAfter(otherTask.getStartTime())
+                        && this.getStartTime().isBefore(otherTask.getEndTime())
+        ) {
+            return true;
+        }
+        return this.getEndTime().isAfter(otherTask.getStartTime()) && this.getEndTime().isBefore(otherTask.getEndTime());
     }
 }
 

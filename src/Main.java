@@ -102,45 +102,34 @@ public class Main {
 
         // Проверяем, что удалённая задача пропадает из истории тоже.
         taskManager.deleteTaskById(taskId1);
-        actualHistoryList = taskManager.getHistory();
-        for (Task iTask : actualHistoryList) {
+        taskManager.getHistory().forEach(iTask -> {
             assert iTask.getTaskId() != taskId1;
-        }
+        });
 
         // Проверяем, что с удаленным эпиком из истории пропадают и подзадачи.
         taskManager.deleteEpicById(epicId);
-        actualHistoryList = taskManager.getHistory();
-        for (Task iTask : actualHistoryList) {
+        taskManager.getHistory().forEach(iTask -> {
             assert iTask.getTaskId() != epicId;
             assert iTask.getTaskId() != subTaskId1;
             assert iTask.getTaskId() != subTaskId2;
             assert iTask.getTaskId() != subTaskId3;
-        }
+        });
 
     }
 
     private static void printTasksWithHistory(TaskManager manager) {
         System.out.println("Задачи:");
-        for (Task task : manager.getTasks()) {
-            System.out.println(task);
-        }
+        manager.getTasks().forEach(System.out::println);
         System.out.println("Эпики:");
-        for (Task epic : manager.getEpics()) {
+        manager.getEpics().forEach(epic -> {
             System.out.println(epic);
-
-            for (Task task : manager.getEpicSubtasks(epic.getTaskId())) {
-                System.out.println("--> " + task);
-            }
-        }
+            manager.getEpicSubtasks(epic.getTaskId()).forEach(task -> System.out.println("--> " + task));
+        });
         System.out.println("Подзадачи:");
-        for (Task subtask : manager.getSubTasks()) {
-            System.out.println(subtask);
-        }
+        manager.getSubTasks().forEach(System.out::println);
 
         System.out.println("История:");
-        for (Task task : manager.getHistory()) {
-            System.out.println(task);
-        }
+        manager.getHistory().forEach(System.out::println);
     }
 
     public static void testCreatingTasks(TaskManager taskManager) {
@@ -206,16 +195,15 @@ public class Main {
     }
 
     public static void testChangingTaskStatuses(TaskManager taskManager, TaskStatus status) {
-
-        for (Task task : taskManager.getTasks()) {
+        taskManager.getTasks().forEach(task -> {
             task.setTaskStatus(status);
             taskManager.updateTask(task);
 
             TaskStatus taskStatus = taskManager.getTaskById(task.getTaskId()).getTaskStatus();
             assert taskStatus == status;
-        }
+        });
 
-        for (Epic epic : taskManager.getEpics()) {
+        taskManager.getEpics().forEach(epic -> {
             TaskStatus originalStatus = epic.getTaskStatus();  // Для теста ниже, что статус не изменился.
 
             epic.setTaskStatus(status);
@@ -223,16 +211,15 @@ public class Main {
 
             TaskStatus epicStatus = taskManager.getEpicById(epic.getTaskId()).getTaskStatus();
             assert epicStatus == originalStatus;
-        }
+        });
 
-        for (SubTask subTask : taskManager.getSubTasks()) {
+        taskManager.getSubTasks().forEach(subTask -> {
             subTask.setTaskStatus(status);
             taskManager.updateSubTask(subTask);
 
             TaskStatus taskStatus = taskManager.getSubTaskById(subTask.getTaskId()).getTaskStatus();
             assert taskStatus == status;
-        }
-
+        });
     }
 
     public static void testDeletingTask(TaskManager taskManager) {
@@ -256,10 +243,9 @@ public class Main {
         assert task == null;
 
         // Проверить, что подзадачи отвязались от эпика и стали задачами
-        if (epicSubTaskIds.isEmpty()) return;
-        for (Integer subTaskId : epicSubTaskIds) {
+        epicSubTaskIds.forEach(subTaskId -> {
             assert taskManager.getTaskById(subTaskId) != null;
-        }
+        });
     }
 
     public static void testDeletingSubTask(TaskManager taskManager) {
