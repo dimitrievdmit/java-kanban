@@ -11,7 +11,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Epic> epics = new HashMap<>();
     protected final Map<Integer, SubTask> subTasks = new HashMap<>();
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
-    protected final TreeSet<Task> prioritizedTasks = new TreeSet<>(
+    protected final Set<Task> prioritizedTasks = new TreeSet<>(
             Comparator.comparing(
                     task -> task.startTime,
                     Comparator.nullsFirst(Comparator.naturalOrder())
@@ -43,7 +43,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Set<Task> getPrioritizedTasks() {
-        return prioritizedTasks;
+        /*Задаём компаратор заново, так как при простом пересоздании new TreeSet<>(prioritizedTasks)
+        выпадает ошибка сортировки.*/
+        TreeSet<Task> newSet = new TreeSet<>(
+                Comparator.comparing(
+                        task -> task.startTime,
+                        Comparator.nullsFirst(Comparator.naturalOrder())
+                )
+        );
+        newSet.addAll(prioritizedTasks);
+        return newSet;
     }
 
     @Override

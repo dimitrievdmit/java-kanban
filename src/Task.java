@@ -133,15 +133,10 @@ public class Task {
         if (this.getEndTime() == null) return false;
         if (otherTask == null || otherTask.getEndTime() == null) return false;
 
-        if (this.getStartTime().isEqual(otherTask.getStartTime())) return true;
-        if (this.getEndTime().isEqual(otherTask.getEndTime())) return true;
-        if (
-                this.getStartTime().isAfter(otherTask.getStartTime())
-                        && this.getStartTime().isBefore(otherTask.getEndTime())
-        ) {
-            return true;
-        }
-        return this.getEndTime().isAfter(otherTask.getStartTime()) && this.getEndTime().isBefore(otherTask.getEndTime());
+        return !(
+                this.getEndTime().isBefore(otherTask.getStartTime())
+                        || this.getStartTime().isAfter(otherTask.getEndTime())
+        );
     }
 }
 
