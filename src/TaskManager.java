@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     List<Task> getTasks();
@@ -8,6 +9,8 @@ public interface TaskManager {
     List<SubTask> getSubTasks();
 
     List<Task> getAllTasksAllTypes();
+
+    Set<Task> getPrioritizedTasks();
 
     List<SubTask> getEpicSubtasks(int epicId);
 

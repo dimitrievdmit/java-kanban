@@ -1,3 +1,6 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class SubTask extends Task {
     private int epicId;
 
@@ -6,9 +9,19 @@ public class SubTask extends Task {
         this.epicId = epicId;
     }
 
+    public SubTask(String title, String description, TaskStatus taskStatus, int epicId, Duration duration, LocalDateTime startTime) {
+        super(title, description, taskStatus, duration, startTime);
+        this.epicId = epicId;
+    }
+
     public SubTask(int taskId, String title, String description, TaskStatus taskStatus, int epicId) {
         super(taskId, title, description, taskStatus);
         if (epicId == taskId) return;
+        this.epicId = epicId;
+    }
+
+    public SubTask(int taskId, String title, String description, TaskStatus taskStatus, int epicId, Duration duration, LocalDateTime startTime) {
+        super(taskId, title, description, taskStatus, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -35,13 +48,15 @@ public class SubTask extends Task {
     public String toCsvString() {
         String epicIdStr = String.valueOf(epicId);
         return String.format(
-                "%s,%s,%s,%s,%s,%s",
+                "%s,%s,%s,%s,%s,%s,%s,%s,",
                 taskId,
                 TaskType.SUBTASK,
                 title,
                 taskStatus,
                 description,
-                epicIdStr
+                epicIdStr,
+                duration == null ? "" : duration.toMinutes(),
+                startTime == null ? "" : startTime
         );
     }
 }
