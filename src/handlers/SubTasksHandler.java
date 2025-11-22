@@ -1,6 +1,6 @@
 package handlers;
 
-import typeTokens.SubTaskListTypeToken;
+import typetokens.SubTaskListTypeToken;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import exceptions.TaskIdFormatException;

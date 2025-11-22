@@ -1,7 +1,7 @@
 package handlers;
 
 
-import typeTokens.TaskListTypeToken;
+import typetokens.TaskListTypeToken;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 
