@@ -13,7 +13,7 @@ import services.TaskManager;
 
 import static schemas.enums.Endpoint.*;
 
-abstract public class BaseHttpHandler implements HttpHandler {
+abstract class BaseHttpHandler implements HttpHandler {
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     protected final TaskManager taskManager;
 
