@@ -1,6 +1,6 @@
 package handlers;
 
-import TypeTokens.SubTaskListTypeToken;
+import typeTokens.SubTaskListTypeToken;
 import exceptions.TaskNotFoundException;
 import exceptions.TaskTimeIntersectionException;
 import org.junit.jupiter.api.BeforeEach;

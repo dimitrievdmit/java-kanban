@@ -1,8 +1,8 @@
 package handlers;
 
 
-import TypeTokens.EpicListTypeToken;
-import TypeTokens.SubTaskListTypeToken;
+import typeTokens.EpicListTypeToken;
+import typeTokens.SubTaskListTypeToken;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import exceptions.TaskIdFormatException;

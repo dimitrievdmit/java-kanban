@@ -1,7 +1,7 @@
 package handlers;
 
-import TypeTokens.EpicListTypeToken;
-import TypeTokens.SubTaskListTypeToken;
+import typeTokens.EpicListTypeToken;
+import typeTokens.SubTaskListTypeToken;
 import exceptions.TaskNotFoundException;
 import exceptions.TaskTimeIntersectionException;
 import org.junit.jupiter.api.Test;

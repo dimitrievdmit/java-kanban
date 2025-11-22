@@ -1,6 +1,6 @@
 package handlers;
 
-import TypeTokens.TaskListTypeToken;
+import typeTokens.TaskListTypeToken;
 import exceptions.TaskTimeIntersectionException;
 import org.junit.jupiter.api.Test;
 

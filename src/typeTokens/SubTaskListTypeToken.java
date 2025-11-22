@@ -1,4 +1,4 @@
-package TypeTokens;
+package typeTokens;
 
 import com.google.gson.reflect.TypeToken;
 import schemas.tasks.SubTask;
